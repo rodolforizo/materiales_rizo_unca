@@ -1,588 +1,586 @@
-<!-- ============================================================= -->
-<!-- VERSIÓN MOODLE — pegar SOLO este bloque como "Código fuente"  -->
-<!-- en la herramienta "Página" de Moodle (editor Atto/TinyMCE)    -->
-<!-- No incluir <html>, <head>, <body> ni </body></html>           -->
-<!-- ============================================================= -->
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kahoot, herramienta para juegos y evaluaciones interactivas</title>
 <style>
-/* Todos los estilos scoped a #kahoot-mod para no chocar con Moodle */
-#kahoot-mod *,
-#kahoot-mod *::before,
-#kahoot-mod *::after{box-sizing:border-box;}
+  :root{
+    --morado:#46178f;
+    --morado-oscuro:#2d0f5e;
+    --morado-medio:#864cbf;
+    --morado-claro:#f3ecfa;
+    --texto:#2b2333;
+    --gris:#6b6478;
+    --acento:#ffd166;
+    --verde:#2e9e4f;
+    --vidrio:rgba(255,255,255,.65);
+    --sombra:0 10px 30px rgba(45,15,94,.18);
+    --sombra-hover:0 18px 40px rgba(45,15,94,.28);
+  }
 
-#kahoot-mod{
-  --km-morado:#46178f;
-  --km-morado-oscuro:#2d0f5e;
-  --km-morado-medio:#864cbf;
-  --km-morado-claro:#f3ecfa;
-  --km-texto:#2b2333;
-  --km-gris:#6b6478;
-  --km-acento:#ffd166;
-  --km-verde:#2e9e4f;
-  --km-sombra:0 10px 30px rgba(45,15,94,.18);
-  --km-sombra-hover:0 18px 40px rgba(45,15,94,.28);
+  *{box-sizing:border-box;}
 
-  font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  color:var(--km-texto);
-  line-height:1.6;
-  -webkit-font-smoothing:antialiased;
-  background:#faf8fd;
-  background-image:
-    radial-gradient(circle at 12% 8%, rgba(134,76,191,.10), transparent 40%),
-    radial-gradient(circle at 88% 92%, rgba(70,23,143,.08), transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(255,209,102,.04), transparent 55%);
-  border-radius:12px;
-  padding:0;
-  margin:12px 0;
-  overflow:hidden;
-}
+  html{scroll-behavior:smooth;}
 
-/* ---------- ENCABEZADO ---------- */
-#kahoot-mod .km-header{
-  position:relative;
-  background:linear-gradient(135deg,var(--km-morado-oscuro) 0%,var(--km-morado) 55%,var(--km-morado-medio) 100%);
-  color:#fff;
-  padding:48px 20px 40px;
-  text-align:center;
-  overflow:hidden;
-}
-#kahoot-mod .km-header::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:
-    radial-gradient(circle at 20% 30%, rgba(255,255,255,.18), transparent 25%),
-    radial-gradient(circle at 80% 70%, rgba(255,209,102,.20), transparent 30%);
-  pointer-events:none;
-}
-#kahoot-mod .km-header::after{
-  content:"";
-  position:absolute;
-  width:280px;height:280px;
-  right:-80px;top:-80px;
-  background:radial-gradient(circle, rgba(255,209,102,.35), transparent 70%);
-  border-radius:50%;
-  filter:blur(20px);
-  pointer-events:none;
-}
+  body{
+    margin:0;
+    font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--texto);
+    background:#faf8fd;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(134,76,191,.10), transparent 40%),
+      radial-gradient(circle at 88% 92%, rgba(70,23,143,.08), transparent 45%),
+      radial-gradient(circle at 50% 50%, rgba(255,209,102,.04), transparent 55%);
+    background-attachment:fixed;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
 
-#kahoot-mod .km-badge{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  background:rgba(255,255,255,.15);
-  border:1px solid rgba(255,255,255,.25);
-  padding:7px 16px;
-  border-radius:999px;
-  font-size:.8rem;
-  font-weight:600;
-  letter-spacing:.4px;
-  text-transform:uppercase;
-  margin-bottom:18px;
-}
-#kahoot-mod .km-badge .km-dot{
-  width:8px;height:8px;
-  border-radius:50%;
-  background:var(--km-acento);
-  box-shadow:0 0 12px var(--km-acento);
-  animation:km-pulso 2s infinite;
-}
-@keyframes km-pulso{
-  0%,100%{opacity:1;transform:scale(1);}
-  50%{opacity:.5;transform:scale(1.25);}
-}
+  /* ---------- ENCABEZADO ---------- */
+  header{
+    position:relative;
+    background:linear-gradient(135deg,var(--morado-oscuro) 0%,var(--morado) 55%,var(--morado-medio) 100%);
+    color:#fff;
+    padding:54px 20px 44px;
+    text-align:center;
+    overflow:hidden;
+  }
 
-#kahoot-mod .km-header h1{
-  position:relative;
-  margin:0 auto 14px;
-  max-width:920px;
-  font-size:clamp(1.5rem,3.8vw,2.5rem);
-  line-height:1.2;
-  letter-spacing:-.3px;
-  font-weight:800;
-  text-shadow:0 2px 18px rgba(0,0,0,.25);
-}
+  /* Patrón sutil en el header */
+  header::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,.18), transparent 25%),
+      radial-gradient(circle at 80% 70%, rgba(255,209,102,.20), transparent 30%);
+    pointer-events:none;
+  }
 
-#kahoot-mod .km-sub{
-  position:relative;
-  margin:0 auto;
-  max-width:680px;
-  font-size:clamp(.95rem,1.6vw,1.1rem);
-  opacity:.94;
-  font-weight:400;
-}
+  /* blobs decorativos */
+  header::after{
+    content:"";
+    position:absolute;
+    width:280px;height:280px;
+    right:-80px;top:-80px;
+    background:radial-gradient(circle, rgba(255,209,102,.35), transparent 70%);
+    border-radius:50%;
+    filter:blur(20px);
+    pointer-events:none;
+  }
 
-/* Barra de progreso */
-#kahoot-mod .km-progreso{
-  position:relative;
-  max-width:540px;
-  margin:28px auto 0;
-}
-#kahoot-mod .km-barra-fondo{
-  height:14px;
-  background:rgba(255,255,255,.18);
-  border-radius:999px;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:inset 0 1px 3px rgba(0,0,0,.15);
-}
-#kahoot-mod .km-barra-relleno{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg, var(--km-acento), #ffae42);
-  border-radius:999px;
-  transition:width .5s cubic-bezier(.22,1,.36,1);
-  box-shadow:0 0 14px rgba(255,209,102,.6);
-  position:relative;
-}
-#kahoot-mod .km-barra-relleno::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
-  animation:km-brillo 2.5s infinite;
-}
-@keyframes km-brillo{
-  0%{transform:translateX(-100%);}
-  100%{transform:translateX(100%);}
-}
-#kahoot-mod .km-progreso p{
-  margin:10px 0 0;
-  font-size:.85rem;
-  opacity:.95;
-  font-weight:500;
-}
+  header .badge{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,.25);
+    padding:7px 16px;
+    border-radius:999px;
+    font-size:.8rem;
+    font-weight:600;
+    letter-spacing:.4px;
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  header .badge .dot{
+    width:8px;height:8px;
+    border-radius:50%;
+    background:var(--acento);
+    box-shadow:0 0 12px var(--acento);
+    animation:pulso 2s infinite;
+  }
+  @keyframes pulso{
+    0%,100%{opacity:1;transform:scale(1);}
+    50%{opacity:.5;transform:scale(1.25);}
+  }
 
-/* ---------- CONTENEDOR ---------- */
-#kahoot-mod .km-main{
-  max-width:1180px;
-  margin:0 auto;
-  padding:30px 18px 44px;
-}
+  header h1{
+    position:relative;
+    margin:0 auto 14px;
+    max-width:920px;
+    font-size:clamp(1.5rem,3.8vw,2.5rem);
+    line-height:1.2;
+    letter-spacing:-.3px;
+    font-weight:800;
+    text-shadow:0 2px 18px rgba(0,0,0,.25);
+  }
 
-/* ---------- AVISO ---------- */
-#kahoot-mod .km-aviso{
-  position:relative;
-  background:linear-gradient(135deg, var(--km-morado-claro), #fff);
-  border-left:6px solid var(--km-morado);
-  border-radius:14px;
-  padding:18px 22px;
-  font-size:.95rem;
-  color:var(--km-morado-oscuro);
-  margin:0 0 32px;
-  box-shadow:0 4px 16px rgba(70,23,143,.08);
-  display:flex;
-  gap:14px;
-  align-items:flex-start;
-}
-#kahoot-mod .km-aviso .km-icon{
-  flex-shrink:0;
-  width:34px;height:34px;
-  background:var(--km-morado);
-  border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  color:#fff;
-  font-weight:800;
-  font-size:1.1rem;
-  box-shadow:0 4px 10px rgba(70,23,143,.35);
-}
-#kahoot-mod .km-aviso strong{color:var(--km-morado);}
+  header .sub{
+    position:relative;
+    margin:0 auto;
+    max-width:680px;
+    font-size:clamp(.95rem,1.6vw,1.1rem);
+    opacity:.94;
+    font-weight:400;
+  }
 
-/* ---------- BOTÓN FORO ---------- */
-#kahoot-mod .km-foro-cta{
-  display:flex;
-  justify-content:center;
-  margin:0 0 36px;
-}
-#kahoot-mod .km-foro-cta a{
-  display:inline-flex;
-  align-items:center;
-  gap:12px;
-  background:linear-gradient(135deg, var(--km-morado) 0%, var(--km-morado-medio) 100%);
-  color:#fff !important;
-  text-decoration:none;
-  font-weight:700;
-  font-size:1.02rem;
-  padding:16px 32px;
-  border-radius:999px;
-  box-shadow:0 10px 24px rgba(70,23,143,.35);
-  transition:transform .25s ease, box-shadow .25s ease;
-  position:relative;
-  overflow:hidden;
-  border:1px solid rgba(255,255,255,.18);
-}
-#kahoot-mod .km-foro-cta a::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:linear-gradient(135deg, rgba(255,255,255,.25), transparent 60%);
-  opacity:0;
-  transition:opacity .25s ease;
-}
-#kahoot-mod .km-foro-cta a:hover{
-  transform:translateY(-3px) scale(1.02);
-  box-shadow:0 16px 32px rgba(70,23,143,.45);
-}
-#kahoot-mod .km-foro-cta a:hover::before{opacity:1;}
-#kahoot-mod .km-foro-cta a:active{transform:translateY(-1px) scale(1);}
-#kahoot-mod .km-foro-cta .km-ico{
-  width:22px;height:22px;
-  flex-shrink:0;
-}
-#kahoot-mod .km-foro-cta .km-arrow{transition:transform .25s ease;}
-#kahoot-mod .km-foro-cta a:hover .km-arrow{transform:translateX(4px);}
+  /* Barra de progreso */
+  .progreso{
+    position:relative;
+    max-width:540px;
+    margin:28px auto 0;
+  }
+  .barra-fondo{
+    height:14px;
+    background:rgba(255,255,255,.18);
+    border-radius:999px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.18);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.15);
+  }
+  .barra-relleno{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--acento), #ffae42);
+    border-radius:999px;
+    transition:width .5s cubic-bezier(.22,1,.36,1);
+    box-shadow:0 0 14px rgba(255,209,102,.6);
+    position:relative;
+  }
+  .barra-relleno::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.45), transparent);
+    animation:brillo 2.5s infinite;
+  }
+  @keyframes brillo{
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(100%);}
+  }
+  .progreso p{
+    margin:10px 0 0;
+    font-size:.85rem;
+    opacity:.95;
+    font-weight:500;
+  }
 
-/* ---------- GRILLA DE VIDEOS ---------- */
-#kahoot-mod .km-grilla{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
-  gap:26px;
-}
+  /* ---------- CONTENEDOR ---------- */
+  main{
+    max-width:1180px;
+    margin:0 auto;
+    padding:36px 18px 50px;
+  }
 
-#kahoot-mod .km-card{
-  position:relative;
-  background:#fff;
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:var(--km-sombra);
-  display:flex;
-  flex-direction:column;
-  transition:transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
-  border:1px solid rgba(70,23,143,.06);
-}
-#kahoot-mod .km-card::before{
-  content:"";
-  position:absolute;
-  top:0;left:0;right:0;
-  height:5px;
-  background:linear-gradient(90deg, var(--km-morado-oscuro), var(--km-morado), var(--km-morado-medio));
-  z-index:2;
-}
-#kahoot-mod .km-card:hover{
-  transform:translateY(-6px);
-  box-shadow:var(--km-sombra-hover);
-}
-#kahoot-mod .km-card.km-done::before{
-  background:linear-gradient(90deg, #1f7a38, var(--km-verde), #54c178);
-}
+  /* ---------- AVISO ---------- */
+  .aviso{
+    position:relative;
+    background:linear-gradient(135deg, var(--morado-claro), #fff);
+    border-left:6px solid var(--morado);
+    border-radius:14px;
+    padding:18px 22px 18px 22px;
+    font-size:.95rem;
+    color:var(--morado-oscuro);
+    margin:0 0 36px;
+    box-shadow:0 4px 16px rgba(70,23,143,.08);
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+  }
+  .aviso .icon{
+    flex-shrink:0;
+    width:34px;height:34px;
+    background:var(--morado);
+    border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    color:#fff;
+    font-weight:800;
+    font-size:1.1rem;
+    box-shadow:0 4px 10px rgba(70,23,143,.35);
+  }
+  .aviso strong{color:var(--morado);}
 
-/* Número de video flotante */
-#kahoot-mod .km-card-num{
-  position:absolute;
-  top:18px;left:18px;
-  width:38px;height:38px;
-  border-radius:50%;
-  background:rgba(45,15,94,.85);
-  color:#fff;
-  font-weight:800;
-  font-size:1.05rem;
-  display:flex;align-items:center;justify-content:center;
-  z-index:3;
-  border:2px solid rgba(255,255,255,.4);
-  box-shadow:0 4px 12px rgba(0,0,0,.3);
-  transition:background .25s ease, transform .25s ease;
-}
-#kahoot-mod .km-card.km-done .km-card-num{
-  background:rgba(46,158,79,.95);
-}
-#kahoot-mod .km-card:hover .km-card-num{transform:scale(1.08);}
+  /* ---------- BOTÓN FORO ---------- */
+  .foro-cta{
+    display:flex;
+    justify-content:center;
+    margin:0 0 40px;
+  }
+  .foro-cta a{
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    background:linear-gradient(135deg, var(--morado) 0%, var(--morado-medio) 100%);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:1.02rem;
+    padding:16px 32px;
+    border-radius:999px;
+    box-shadow:0 10px 24px rgba(70,23,143,.35);
+    transition:transform .25s ease, box-shadow .25s ease;
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,.18);
+  }
+  .foro-cta a::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(135deg, rgba(255,255,255,.25), transparent 60%);
+    opacity:0;
+    transition:opacity .25s ease;
+  }
+  .foro-cta a:hover{
+    transform:translateY(-3px) scale(1.02);
+    box-shadow:0 16px 32px rgba(70,23,143,.45);
+  }
+  .foro-cta a:hover::before{opacity:1;}
+  .foro-cta a:active{transform:translateY(-1px) scale(1);}
+  .foro-cta a .ico{
+    width:22px;height:22px;
+    flex-shrink:0;
+  }
+  .foro-cta a .arrow{
+    transition:transform .25s ease;
+  }
+  .foro-cta a:hover .arrow{transform:translateX(4px);}
 
-/* Video responsivo */
-#kahoot-mod .km-video{
-  position:relative;
-  width:100%;
-  aspect-ratio:16 / 9;
-  background:linear-gradient(135deg, #1a0838, #2d0f5e);
-}
-#kahoot-mod .km-video iframe{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  border:0;
-}
+  /* ---------- GRILLA DE VIDEOS ---------- */
+  .grilla{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+    gap:26px;
+  }
 
-#kahoot-mod .km-card-body{
-  padding:20px 22px 22px;
-  display:flex;
-  flex-direction:column;
-  flex:1;
-}
-#kahoot-mod .km-card-body h2{
-  margin:0 0 10px;
-  font-size:1.08rem;
-  color:var(--km-morado-oscuro);
-  line-height:1.35;
-  font-weight:700;
-  letter-spacing:-.2px;
-}
-#kahoot-mod .km-card-body p{
-  margin:0 0 18px;
-  font-size:.92rem;
-  color:var(--km-gris);
-  flex:1;
-  line-height:1.55;
-}
+  .card{
+    position:relative;
+    background:#fff;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:var(--sombra);
+    display:flex;
+    flex-direction:column;
+    transition:transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
+    border:1px solid rgba(70,23,143,.06);
+  }
+  .card::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;right:0;
+    height:5px;
+    background:linear-gradient(90deg, var(--morado-oscuro), var(--morado), var(--morado-medio));
+    z-index:2;
+  }
+  .card:hover{
+    transform:translateY(-6px);
+    box-shadow:var(--sombra-hover);
+  }
 
-/* Casilla "visto" */
-#kahoot-mod .km-visto-label{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  font-size:.88rem;
-  font-weight:600;
-  color:var(--km-morado-oscuro);
-  background:var(--km-morado-claro);
-  padding:10px 16px;
-  border-radius:999px;
-  cursor:pointer;
-  user-select:none;
-  align-self:flex-start;
-  transition:background .25s ease, transform .15s ease, box-shadow .25s ease;
-  border:1px solid rgba(70,23,143,.1);
-}
-#kahoot-mod .km-visto-label:hover{
-  background:#e6d8f7;
-  transform:translateY(-1px);
-  box-shadow:0 4px 12px rgba(70,23,143,.15);
-}
-#kahoot-mod .km-visto-label:active{transform:translateY(0);}
-#kahoot-mod .km-visto-label input{
-  width:18px;height:18px;
-  accent-color:var(--km-morado);
-  cursor:pointer;
-  margin:0;
-}
-#kahoot-mod .km-card.km-done .km-visto-label{
-  background:#e3f6e8;
-  color:#1f7a38;
-  border-color:rgba(46,158,79,.25);
-}
+  .card.done::before{
+    background:linear-gradient(90deg, #1f7a38, var(--verde), #54c178);
+  }
 
-/* ---------- PIE ---------- */
-#kahoot-mod .km-footer{
-  background:linear-gradient(135deg, var(--km-morado-oscuro), var(--km-morado));
-  color:#e6dcf7;
-  text-align:center;
-  padding:26px 18px;
-  font-size:.88rem;
-  position:relative;
-  overflow:hidden;
-}
-#kahoot-mod .km-footer::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:
-    radial-gradient(circle at 15% 50%, rgba(255,209,102,.10), transparent 25%),
-    radial-gradient(circle at 85% 50%, rgba(134,76,191,.18), transparent 30%);
-  pointer-events:none;
-}
-#kahoot-mod .km-footer p{position:relative;margin:0;}
+  /* Número de video flotante */
+  .card-num{
+    position:absolute;
+    top:18px;left:18px;
+    width:38px;height:38px;
+    border-radius:50%;
+    background:rgba(45,15,94,.85);
+    backdrop-filter:blur(6px);
+    color:#fff;
+    font-weight:800;
+    font-size:1.05rem;
+    display:flex;align-items:center;justify-content:center;
+    z-index:3;
+    border:2px solid rgba(255,255,255,.4);
+    box-shadow:0 4px 12px rgba(0,0,0,.3);
+    transition:background .25s ease, transform .25s ease;
+  }
+  .card.done .card-num{
+    background:rgba(46,158,79,.95);
+  }
+  .card:hover .card-num{transform:scale(1.08);}
 
-#kahoot-mod .km-hidden{display:none;}
+  /* Video responsivo */
+  .video{
+    position:relative;
+    width:100%;
+    aspect-ratio:16 / 9;
+    background:linear-gradient(135deg, #1a0838, #2d0f5e);
+  }
+  .video iframe{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:0;
+  }
 
-@media (max-width:560px){
-  #kahoot-mod .km-grilla{grid-template-columns:1fr;}
-}
+  .card-body{
+    padding:20px 22px 22px;
+    display:flex;
+    flex-direction:column;
+    flex:1;
+  }
 
-@media (prefers-reduced-motion: reduce){
-  #kahoot-mod *{animation:none !important;transition:none !important;}
-}
+  .card-body h2{
+    margin:0 0 10px;
+    font-size:1.08rem;
+    color:var(--morado-oscuro);
+    line-height:1.35;
+    font-weight:700;
+    letter-spacing:-.2px;
+  }
+
+  .card-body p{
+    margin:0 0 18px;
+    font-size:.92rem;
+    color:var(--gris);
+    flex:1;
+    line-height:1.55;
+  }
+
+  /* Casilla "visto" */
+  .visto-label{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-size:.88rem;
+    font-weight:600;
+    color:var(--morado-oscuro);
+    background:var(--morado-claro);
+    padding:10px 16px;
+    border-radius:999px;
+    cursor:pointer;
+    user-select:none;
+    align-self:flex-start;
+    transition:background .25s ease, transform .15s ease, box-shadow .25s ease;
+    border:1px solid rgba(70,23,143,.1);
+  }
+  .visto-label:hover{
+    background:#e6d8f7;
+    transform:translateY(-1px);
+    box-shadow:0 4px 12px rgba(70,23,143,.15);
+  }
+  .visto-label:active{transform:translateY(0);}
+  .visto-label input{
+    width:18px;
+    height:18px;
+    accent-color:var(--morado);
+    cursor:pointer;
+    margin:0;
+  }
+  .card.done .visto-label{
+    background:#e3f6e8;
+    color:#1f7a38;
+    border-color:rgba(46,158,79,.25);
+  }
+
+  /* ---------- PIE ---------- */
+  footer{
+    background:linear-gradient(135deg, var(--morado-oscuro), var(--morado));
+    color:#e6dcf7;
+    text-align:center;
+    padding:28px 18px;
+    font-size:.88rem;
+    position:relative;
+    overflow:hidden;
+  }
+  footer::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background-image:
+      radial-gradient(circle at 15% 50%, rgba(255,209,102,.10), transparent 25%),
+      radial-gradient(circle at 85% 50%, rgba(134,76,191,.18), transparent 30%);
+    pointer-events:none;
+  }
+  footer p{position:relative;margin:0;}
+
+  /* ---------- IMPRESIÓN ---------- */
+  @media print{
+    .video{display:none;}
+    .card{box-shadow:none;border:1px solid #ccc;}
+    .foro-cta a{box-shadow:none;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+  }
 </style>
+</head>
+<body>
 
-<div id="kahoot-mod">
+<header>
+  <span class="badge"><span class="dot"></span> Recurso educativo interactivo</span>
+  <h1>Kahoot, herramienta para juegos y evaluaciones interactivas</h1>
+  <p class="sub">Selección de videos para orientar el diseño de material educativo digital.</p>
 
-  <div class="km-header">
-    <span class="km-badge"><span class="km-dot"></span> Recurso educativo interactivo</span>
-    <h1>Kahoot, herramienta para juegos y evaluaciones interactivas</h1>
-    <p class="km-sub">Selección de videos para orientar el diseño de material educativo digital.</p>
+  <div class="progreso">
+    <div class="barra-fondo"><div class="barra-relleno" id="barra"></div></div>
+    <p id="progresoTexto">0 de 5 videos marcados como vistos</p>
+  </div>
+</header>
 
-    <div class="km-progreso">
-      <div class="km-barra-fondo"><div class="km-barra-relleno" id="km-barra"></div></div>
-      <p id="km-progresoTexto">0 de 5 videos marcados como vistos</p>
-    </div>
+<main>
+
+  <p class="aviso">
+    <span class="icon" aria-hidden="true">i</span>
+    <span>
+      <strong>Aclaración:</strong> mucho del material compartido en la web es <strong>no profesional</strong>.
+      Está compartido a fines de <strong>orientarse en la tarea de diseñar material educativo</strong>.
+      Se recomienda contrastar la información con la documentación oficial de la herramienta.
+    </span>
+  </p>
+
+  <div class="foro-cta">
+    <a href="https://facenvirtual.unca.edu.ar/mod/forum/view.php?id=64404" target="_blank" rel="noopener noreferrer">
+      <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      Agregar un comentario en el foro
+      <svg class="ico arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="5" y1="12" x2="19" y2="12"/>
+        <polyline points="12 5 19 12 12 19"/>
+      </svg>
+    </a>
   </div>
 
-  <div class="km-main">
+  <section class="grilla" aria-label="Lista de videos">
 
-    <div class="km-aviso">
-      <span class="km-icon" aria-hidden="true">i</span>
-      <span>
-        <strong>Aclaración:</strong> mucho del material compartido en la web es <strong>no profesional</strong>.
-        Está compartido a fines de <strong>orientarse en la tarea de diseñar material educativo</strong>.
-        Se recomienda contrastar la información con la documentación oficial de la herramienta.
-      </span>
-    </div>
-
-    <div class="km-foro-cta">
-      <a href="https://facenvirtual.unca.edu.ar/mod/forum/view.php?id=64404" target="_blank" rel="noopener noreferrer">
-        <svg class="km-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        Agregar un comentario en el foro
-        <svg class="km-ico km-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
-        </svg>
-      </a>
-    </div>
-
-    <div class="km-grilla" aria-label="Lista de videos">
-
-      <!-- VIDEO 1 -->
-      <div class="km-card">
-        <span class="km-card-num">1</span>
-        <div class="km-video">
-          <iframe src="https://www.youtube.com/embed/VTGVe5w9AdQ"
-                  title="¿Qué es Kahoot y cómo funciona?"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen></iframe>
-        </div>
-        <div class="km-card-body">
-          <h2>¿Qué es Kahoot y cómo funciona?</h2>
-          <p>Presentación general de la herramienta: qué es, para qué sirve y cómo se organiza una partida de preguntas y respuestas en el aula.</p>
-          <label class="km-visto-label">
-            <input type="checkbox" class="km-visto" data-id="v1"> Marcar como visto
-          </label>
-        </div>
+    <!-- VIDEO 1 -->
+    <article class="card">
+      <span class="card-num">1</span>
+      <div class="video">
+        <iframe src="https://www.youtube.com/embed/VTGVe5w9AdQ"
+                title="¿Qué es Kahoot y cómo funciona?"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
       </div>
-
-      <!-- VIDEO 2 -->
-      <div class="km-card">
-        <span class="km-card-num">2</span>
-        <div class="km-video">
-          <iframe src="https://www.youtube.com/embed/aQfzQbHRT_c"
-                  title="Crear tu primer Kahoot paso a paso"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen></iframe>
-        </div>
-        <div class="km-card-body">
-          <h2>Crear tu primer Kahoot paso a paso</h2>
-          <p>Recorrido por la plataforma: registro, creación de un cuestionario, carga de preguntas y configuración básica del juego.</p>
-          <label class="km-visto-label">
-            <input type="checkbox" class="km-visto" data-id="v2"> Marcar como visto
-          </label>
-        </div>
+      <div class="card-body">
+        <h2>¿Qué es Kahoot y cómo funciona?</h2>
+        <p>Presentación general de la herramienta: qué es, para qué sirve y cómo se organiza una partida de preguntas y respuestas en el aula.</p>
+        <label class="visto-label">
+          <input type="checkbox" class="visto" data-id="v1"> Marcar como visto
+        </label>
       </div>
+    </article>
 
-      <!-- VIDEO 3 -->
-      <div class="km-card">
-        <span class="km-card-num">3</span>
-        <div class="km-video">
-          <iframe src="https://www.youtube.com/embed/4yCSw1XeHJM"
-                  title="Tipos de preguntas y personalización"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen></iframe>
-        </div>
-        <div class="km-card-body">
-          <h2>Tipos de preguntas y personalización</h2>
-          <p>Opciones de preguntas (opción múltiple, verdadero/falso, respuesta abierta), tiempos, imágenes y ajustes para adaptar el juego al grupo.</p>
-          <label class="km-visto-label">
-            <input type="checkbox" class="km-visto" data-id="v3"> Marcar como visto
-          </label>
-        </div>
+    <!-- VIDEO 2 -->
+    <article class="card">
+      <span class="card-num">2</span>
+      <div class="video">
+        <iframe src="https://www.youtube.com/embed/aQfzQbHRT_c"
+                title="Crear tu primer Kahoot paso a paso"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
       </div>
-
-      <!-- VIDEO 4 -->
-      <div class="km-card">
-        <span class="km-card-num">4</span>
-        <div class="km-video">
-          <iframe src="https://www.youtube.com/embed/Opwmi1Gvy94"
-                  title="Cómo lanzar el juego y compartirlo con los estudiantes"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen></iframe>
-        </div>
-        <div class="km-card-body">
-          <h2>Lanzar el juego y compartirlo con los estudiantes</h2>
-          <p>Cómo iniciar una partida, compartir el código o el enlace, y modos de juego (en vivo o asignado como tarea).</p>
-          <label class="km-visto-label">
-            <input type="checkbox" class="km-visto" data-id="v4"> Marcar como visto
-          </label>
-        </div>
+      <div class="card-body">
+        <h2>Crear tu primer Kahoot paso a paso</h2>
+        <p>Recorrido por la plataforma: registro, creación de un cuestionario, carga de preguntas y configuración básica del juego.</p>
+        <label class="visto-label">
+          <input type="checkbox" class="visto" data-id="v2"> Marcar como visto
+        </label>
       </div>
+    </article>
 
-      <!-- VIDEO 5 -->
-      <div class="km-card">
-        <span class="km-card-num">5</span>
-        <div class="km-video">
-          <iframe src="https://www.youtube.com/embed/zh3Vz0P4Iow"
-                  title="Informes y resultados de la partida"
-                  loading="lazy"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen></iframe>
-        </div>
-        <div class="km-card-body">
-          <h2>Informes y resultados: usar los datos de la partida</h2>
-          <p>Cómo leer los informes de resultados, identificar preguntas difíciles y aprovechar la información para la evaluación formativa.</p>
-          <label class="km-visto-label">
-            <input type="checkbox" class="km-visto" data-id="v5"> Marcar como visto
-          </label>
-        </div>
+    <!-- VIDEO 3 -->
+    <article class="card">
+      <span class="card-num">3</span>
+      <div class="video">
+        <iframe src="https://www.youtube.com/embed/4yCSw1XeHJM"
+                title="Tipos de preguntas y personalización"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
       </div>
+      <div class="card-body">
+        <h2>Tipos de preguntas y personalización</h2>
+        <p>Opciones de preguntas (opción múltiple, verdadero/falso, respuesta abierta), tiempos, imágenes y ajustes para adaptar el juego al grupo.</p>
+        <label class="visto-label">
+          <input type="checkbox" class="visto" data-id="v3"> Marcar como visto
+        </label>
+      </div>
+    </article>
 
-    </div>
-  </div>
+    <!-- VIDEO 4 -->
+    <article class="card">
+      <span class="card-num">4</span>
+      <div class="video">
+        <iframe src="https://www.youtube.com/embed/Opwmi1Gvy94"
+                title="Cómo lanzar el juego y compartirlo con los estudiantes"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+      <div class="card-body">
+        <h2>Lanzar el juego y compartirlo con los estudiantes</h2>
+        <p>Cómo iniciar una partida, compartir el código o el enlace, y modos de juego (en vivo o asignado como tarea).</p>
+        <label class="visto-label">
+          <input type="checkbox" class="visto" data-id="v4"> Marcar como visto
+        </label>
+      </div>
+    </article>
 
-  <div class="km-footer">
-    <p>Material de apoyo para el diseño de propuestas educativas con Kahoot · Uso educativo</p>
-  </div>
+    <!-- VIDEO 5 -->
+    <article class="card">
+      <span class="card-num">5</span>
+      <div class="video">
+        <iframe src="https://www.youtube.com/embed/zh3Vz0P4Iow"
+                title="Informes y resultados de la partida"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen></iframe>
+      </div>
+      <div class="card-body">
+        <h2>Informes y resultados: usar los datos de la partida</h2>
+        <p>Cómo leer los informes de resultados, identificar preguntas difíciles y aprovechar la información para la evaluación formativa.</p>
+        <label class="visto-label">
+          <input type="checkbox" class="visto" data-id="v5"> Marcar como visto
+        </label>
+      </div>
+    </article>
 
-</div>
+  </section>
+</main>
+
+<footer>
+  <p>Material de apoyo para el diseño de propuestas educativas con Kahoot · Uso educativo</p>
+</footer>
 
 <script>
-(function(){
-  var cont = document.getElementById('kahoot-mod');
-  if(!cont) return;
-  var casillas = cont.querySelectorAll('.km-visto');
-  var barra = cont.querySelector('#km-barra');
-  var texto = cont.querySelector('#km-progresoTexto');
-  if(!casillas.length || !barra || !texto) return;
+  // Marcar videos como vistos y guardar el progreso en el navegador
+  const casillas = document.querySelectorAll('.visto');
+  const barra = document.getElementById('barra');
+  const texto = document.getElementById('progresoTexto');
 
   function actualizarProgreso(){
-    var total = casillas.length;
-    var hechos = cont.querySelectorAll('.km-visto:checked').length;
-    var pct = total ? (hechos / total) * 100 : 0;
+    const total = casillas.length;
+    const hechos = document.querySelectorAll('.visto:checked').length;
+    const pct = total ? (hechos / total) * 100 : 0;
     barra.style.width = pct + '%';
     texto.textContent = hechos + ' de ' + total + ' videos marcados como vistos';
   }
 
-  for(var i=0; i<casillas.length; i++){
-    var cb = casillas[i];
-    var clave = 'kahoot-visto-' + cb.getAttribute('data-id');
+  casillas.forEach(function(cb){
+    const clave = 'kahoot-visto-' + cb.dataset.id;
 
-    try{ cb.checked = localStorage.getItem(clave) === '1'; }catch(e){}
+    // Recuperar estado guardado
+    try{
+      cb.checked = localStorage.getItem(clave) === '1';
+    }catch(e){}
 
-    var card = cb.closest('.km-card');
-    if(card){
-      if(cb.checked) card.className = card.className.replace(/\bkm-done\b/g,'') + ' km-done';
-      else card.className = card.className.replace(/\bkm-done\b/g,'');
-    }
+    cb.closest('.card').classList.toggle('done', cb.checked);
 
     cb.addEventListener('change', function(){
-      var c = this;
-      var cd = c.closest('.km-card');
-      if(cd){
-        if(c.checked){
-          if(cd.className.indexOf('km-done') === -1) cd.className += ' km-done';
-        } else {
-          cd.className = cd.className.replace(/\bkm-done\b/g,'');
-        }
-      }
-      try{ localStorage.setItem('kahoot-visto-' + c.getAttribute('data-id'), c.checked ? '1' : '0'); }catch(e){}
+      cb.closest('.card').classList.toggle('done', cb.checked);
+      try{
+        localStorage.setItem(clave, cb.checked ? '1' : '0');
+      }catch(e){}
       actualizarProgreso();
     });
-  }
+  });
 
   actualizarProgreso();
-})();
 </script>
 
-<!-- ============================================================= -->
-<!-- FIN DEL BLOQUE MOODLE                                          -->
-<!-- ============================================================= -->
+</body>
+</html>
